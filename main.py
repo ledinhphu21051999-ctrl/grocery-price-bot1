@@ -140,7 +140,7 @@ STAPLES_DATA = [
         "target": "https://www.target.com/p/signature-coffee-organic-three-region-blend-medium-roast-ground-coffee-12oz-good-38-gather-8482/-/A-78613369",
         "aldi": "https://www.aldi.us/store/aldi/products/64796015-house-ground-coffee"
     },
-    
+]
 # --- 6. HÀM CHẠY CHÍNH ĐẨY DỮ LIỆU VÀO SUPABASE ---
 def main():
     print("=== BẮT ĐẦU CÀO GIÁ TỰ ĐỘNG ===")
