@@ -26,17 +26,19 @@ HEADERS = {
     "Upgrade-Insecure-Requests": "1"
 }
 
+SCRAPER_KEY = os.environ.get("SCRAPER_API_KEY")
+
 def fetch_html(url):
     if not url or "http" not in url or "..." in url:
         return None
     try:
-        res = cffi_requests.get(url, headers=HEADERS, impersonate="chrome120", timeout=15)
+        # Nhờ ScraperAPI vượt tường lửa Walmart & Target
+        payload = {'api_key': SCRAPER_KEY, 'url': url}
+        res = cffi_requests.get('http://api.scraperapi.com', params=payload, timeout=30)
         if res.status_code == 200:
             return res.text
-        else:
-            print(f"   [!] HTTP {res.status_code} khi tải link")
     except Exception as e:
-        print(f"   [!] Lỗi kết nối: {e}")
+        print(f"   [!] Lỗi: {e}")
     return None
 
 def parse_price(text):
