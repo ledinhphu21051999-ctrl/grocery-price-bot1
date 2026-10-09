@@ -1,4 +1,5 @@
 import os
+import json
 import re
 from bs4 import BeautifulSoup
 from curl_cffi import requests as cffi_requests
@@ -55,23 +56,49 @@ def scrape_aaa_gas():
 
 # --- 4. HÀM CÀO GIÁ SẢN PHẨM ---
 def scrape_generic_price(url):
-    if not url or "http" not in url:
+    if not url or "http" not in url or "..." in url:
         return None
     html = fetch_html(url)
     if not html:
         return None
     soup = BeautifulSoup(html, "html.parser")
     
-    # Tìm thẻ meta chứa giá tiền
+    # 1. Đọc dữ liệu JSON-LD (Chuẩn SEO của Walmart, Target, Aldi)
+    for script in soup.find_all("script", type="application/ld+json"):
+        try:
+            if not script.string:
+                continue
+            data = json.loads(script.string)
+            
+            # Xử lý nếu JSON dạng danh sách
+            if isinstance(data, list):
+                data = data[0] if data else {}
+            
+            # Bóc tách trường offers -> price / lowPrice
+            offers = data.get("offers", {})
+            if isinstance(offers, list):
+                offers = offers[0] if offers else {}
+                
+            price = offers.get("price") or offers.get("lowPrice")
+            if price:
+                return float(str(price).replace("$", ""))
+        except Exception:
+            continue
+
+    # 2. Tìm thẻ meta chứa giá
     price_meta = soup.find("meta", property="product:price:amount") or soup.find("meta", itemprop="price")
     if price_meta and price_meta.get("content"):
-        return float(price_meta["content"])
-    
-    # Tìm thẻ chứa thông tin giá
+        try:
+            return float(price_meta["content"])
+        except ValueError:
+            pass
+
+    # 3. Quét văn bản có chứa cấu trúc giá
     for el in soup.find_all(class_=re.compile(r'price', re.I)):
         val = extract_price(el.text)
         if val and 0.1 <= val <= 100:
             return val
+            
     return None
 
 # --- 5. DANH SÁCH 10 MÓN THỰC PHẨM (THAY LINK THẬT CỦA BẠN VÀO ĐÂY) ---
