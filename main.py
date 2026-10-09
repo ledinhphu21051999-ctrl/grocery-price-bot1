@@ -1,23 +1,14 @@
 import os
-from supabase import create_client, Client
-
-# Lấy tự động từ Secrets đã cài ở GitHub (KHÔNG cần thay bằng link thật ở đây)
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-import os
 import re
 from bs4 import BeautifulSoup
 from curl_cffi import requests as cffi_requests
 from supabase import create_client, Client
 
-# --- 1. KẾT NỐI SUPABASE (Đoạn 8 dòng của bạn) ---
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
+# --- 1. KẾT NỐI SUPABASE (Tự động xóa dấu / thừa ở cuối URL) ---
+SUPABASE_URL = (os.environ.get("SUPABASE_URL") or "").rstrip("/")
 SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
 # --- 2. CẤU HÌNH HEADERS GIẢ LẬP TRÌNH DUYỆT CHỐNG BỊ CHẶN ---
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
