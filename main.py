@@ -4,10 +4,15 @@ from bs4 import BeautifulSoup
 from curl_cffi import requests as cffi_requests
 from supabase import create_client, Client
 
-# --- 1. KẾT NỐI SUPABASE (Tự động xóa dấu / thừa ở cuối URL) ---
-SUPABASE_URL = (os.environ.get("SUPABASE_URL") or "").rstrip("/")
-SUPABASE_KEY = os.environ.get("SUPABASE_SECRET_KEY")
+# --- 1. TỰ ĐỘNG LÀM SẠCH VÀ CHUẨN HÓA URL SUPABASE ---
+raw_url = (os.environ.get("SUPABASE_URL") or "").strip().rstrip("/")
+if raw_url.endswith("/rest/v1"):
+    raw_url = raw_url[:-8].rstrip("/")
 
+SUPABASE_URL = raw_url
+SUPABASE_KEY = (os.environ.get("SUPABASE_SECRET_KEY") or "").strip()
+
+# Kết nối Supabase
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # --- 2. CẤU HÌNH HEADERS GIẢ LẬP TRÌNH DUYỆT CHỐNG BỊ CHẶN ---
 HEADERS = {
