@@ -25,4 +25,5 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SCRAPER_API_KEY: ${{ secrets.SCRAPER_API_KEY }}
         run: python main.py
